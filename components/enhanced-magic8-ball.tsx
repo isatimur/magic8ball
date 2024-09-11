@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { motion, useAnimation, AnimatePresence } from 'framer-motion'
 import { Loader2 } from 'lucide-react'
 
@@ -32,12 +32,12 @@ export default function EnhancedMagic8Ball() {
     const [isAnswering, setIsAnswering] = useState(false)
     const controls = useAnimation()
 
-    const shake = async () => {
+    const shake = useCallback(async () => {
         if (isShaking || isAnswering) return
 
         setIsShaking(true)
         setIsAnswering(true)
-        
+
         // Add vibration
         if ('vibrate' in navigator) {
             navigator.vibrate(200); // Vibrate for 200ms
@@ -52,7 +52,8 @@ export default function EnhancedMagic8Ball() {
         const newAnswer = phrases[Math.floor(Math.random() * phrases.length)]
         setPhrase(newAnswer)
         setIsAnswering(false)
-    }
+    }, [isShaking, isAnswering, controls, setPhrase, setIsShaking, setIsAnswering])
+
 
     useEffect(() => {
         let lastUpdate = 0;
