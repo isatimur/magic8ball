@@ -8,14 +8,14 @@ const phrases = [
     "Yes,\nif\nyou make a plan",
     "\nFuck yes!\n",
     "Yes,\nif\nyou believe",
-    "Ask\nagain\nafter coffee",
+    "Ask\nagain \nafter coffee",
     "Outlook\nnot so\nsobering",
-    "Reply\nhazy,\ntry beer",
+    "Reply\nhazy, \ntry beer",
     "Signs\npoint to\nmaybe?",
     "As\nif!\n",
-    "In\nyour\ndreams",
-    "Don't\nbet\nyour bitcoin",
-    "Seriously?\nAsk\nChatGPT"
+    "In\nyour \ndreams",
+    "Don't\nbet \nyour bitcoin",
+    "Seriously? \nAsk\ nChatGPT"
 ]
 
 const shakeAnimation = {
