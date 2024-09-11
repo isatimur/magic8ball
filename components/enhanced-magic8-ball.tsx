@@ -11,17 +11,18 @@ const phrases = [
 ]
 
 const shakeAnimation = {
-    rotateX: [0, 10, 0, 10, 0],
-    rotateY: [0, 10, 0, -10, 0],
-    rotate: [0, -5, 5, -5, 5, 0],
-    x: [0, -10, 10, -10, 10, 0],
-    y: [0, -5, 5, -5, 5, 0],
+    rotateX: [0, 25, -20, 22, -18, 15, -12, 8, -5, 3, -2, 0],
+    rotateY: [0, -22, 18, -15, 12, -10, 7, -5, 3, -2, 1, 0],
+    rotate: [0, -12, 10, -8, 6, -4, 3, -2, 1, -1, 0],
+    x: [0, -25, 22, -18, 15, -12, 8, -5, 3, -2, 0],
+    y: [0, -15, 18, -12, 9, -6, 4, -3, 2, -1, 0],
+    scale: [1, 1.08, 0.96, 1.05, 0.98, 1.03, 0.99, 1.01, 1, 1.005, 1],
     transition: {
-        duration: 0.8,
-        ease: "easeInOut",
-        times: [0, 0.2, 0.4, 0.6, 0.8, 1],
-        repeat: 2,
-        repeatType: "loop" as const,
+        duration: 1.5,
+        ease: (t) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t, // Custom easing
+        times: [0, 0.08, 0.16, 0.24, 0.32, 0.4, 0.48, 0.6, 0.72, 0.86, 0.93, 1],
+        repeat: 0,
+        repeatType: "reverse" as const,
     }
 }
 
@@ -40,7 +41,7 @@ export default function EnhancedMagic8Ball() {
         setIsShaking(false)
 
         // Simulate "thinking" time
-        await new Promise(resolve => setTimeout(resolve, 1000))
+        await new Promise(resolve => setTimeout(resolve, 800))
 
         const newAnswer = phrases[Math.floor(Math.random() * phrases.length)]
         setPhrase(newAnswer)
@@ -62,7 +63,7 @@ export default function EnhancedMagic8Ball() {
 
             {/* Magic 8 Ball */}
             <motion.div
-                className="w-64 h-64 bg-red-500 rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:shadow-xl transition-shadow duration-300 relative"
+                className="w-64 h-64 bg-red-600 rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:shadow-xl transition-shadow duration-300 relative"
                 animate={controls}
                 onClick={shake}
                 whileHover={{ scale: 1.05 }}
