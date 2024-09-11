@@ -19,7 +19,7 @@ const shakeAnimation = {
     scale: [1, 1.08, 0.96, 1.05, 0.98, 1.03, 0.99, 1.01, 1, 1.005, 1],
     transition: {
         duration: 1.5,
-        ease: (t) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t, // Custom easing
+        ease: (t: number) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t,
         times: [0, 0.08, 0.16, 0.24, 0.32, 0.4, 0.48, 0.6, 0.72, 0.86, 0.93, 1],
         repeat: 0,
         repeatType: "reverse" as const,
