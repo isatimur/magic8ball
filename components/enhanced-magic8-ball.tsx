@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, useAnimation, AnimatePresence } from 'framer-motion'
 import { Loader2 } from 'lucide-react'
 
@@ -37,6 +37,12 @@ export default function EnhancedMagic8Ball() {
 
         setIsShaking(true)
         setIsAnswering(true)
+        
+        // Add vibration
+        if ('vibrate' in navigator) {
+            navigator.vibrate(200); // Vibrate for 200ms
+        }
+
         await controls.start(shakeAnimation)
         setIsShaking(false)
 
@@ -47,6 +53,36 @@ export default function EnhancedMagic8Ball() {
         setPhrase(newAnswer)
         setIsAnswering(false)
     }
+
+    useEffect(() => {
+        let lastUpdate = 0;
+        let lastX: number, lastY: number, lastZ: number;
+        const shakeThreshold = 15;
+
+        const handleMotion = (event: DeviceMotionEvent) => {
+            const currentTime = new Date().getTime();
+            if ((currentTime - lastUpdate) > 100) {
+                const { x, y, z } = event.accelerationIncludingGravity || { x: 0, y: 0, z: 0 };
+                if (x !== null && y !== null && z !== null) {
+                    const diffTime = currentTime - lastUpdate;
+                    const speed = Math.abs(x + y + z - lastX - lastY - lastZ) / diffTime * 10000;
+
+                    if (speed > shakeThreshold) {
+                        shake();
+                    }
+
+                    lastX = x || 0;
+                    lastY = y || 0;
+                    lastZ = z || 0;
+                    lastUpdate = currentTime;
+                }
+            }
+        };
+
+        window.addEventListener('devicemotion', handleMotion);
+        return () => window.removeEventListener('devicemotion', handleMotion);
+    }, [shake]);
+
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-white p-4">
