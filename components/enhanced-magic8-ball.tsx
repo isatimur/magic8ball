@@ -1,11 +1,11 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState, useRef } from 'react'
 import { motion, useAnimation, AnimatePresence } from 'framer-motion'
 import { Loader2 } from 'lucide-react'
 
 const phrases = [
-    "Yes,\nif\nyou make a plan",
+    "Yes, if\nyou make a plan",
     "\nFuck yes!\n",
     "Yes,\nif\nyou believe",
 ]
@@ -26,11 +26,18 @@ const shakeAnimation = {
     }
 }
 
+interface DeviceMotionEventWithPermission extends DeviceMotionEvent {
+    requestPermission?: () => Promise<'granted' | 'denied' | 'default'>;
+}
+
 export default function EnhancedMagic8Ball() {
     const [phrase, setPhrase] = useState("8")
     const [isShaking, setIsShaking] = useState(false)
     const [isAnswering, setIsAnswering] = useState(false)
     const controls = useAnimation()
+    const lastAcceleration = useRef({ x: 0, y: 0, z: 0 });
+
+
 
     const shake = useCallback(async () => {
         if (isShaking || isAnswering) return
@@ -55,34 +62,55 @@ export default function EnhancedMagic8Ball() {
     }, [isShaking, isAnswering, controls, setPhrase, setIsShaking, setIsAnswering])
 
 
+
     useEffect(() => {
         let lastUpdate = 0;
-        let lastX: number, lastY: number, lastZ: number;
         const shakeThreshold = 15;
+
+        const requestPermission = async () => {
+            if (typeof DeviceMotionEvent !== 'undefined' && 'requestPermission' in DeviceMotionEvent) {
+                try {
+                    const response = await (DeviceMotionEvent as unknown as { requestPermission(): Promise<PermissionState> }).requestPermission();
+                    if (response === 'granted') {
+                        window.addEventListener('devicemotion', handleMotion);
+                    } else {
+                        console.log('Permission to use motion sensors denied.');
+                    }
+                } catch (error) {
+                    console.error('Error requesting permission for motion sensors:', error);
+                }
+            } else if ('DeviceMotionEvent' in window) {
+                window.addEventListener('devicemotion', handleMotion);
+            }
+        };
 
         const handleMotion = (event: DeviceMotionEvent) => {
             const currentTime = new Date().getTime();
             if ((currentTime - lastUpdate) > 100) {
-                const { x, y, z } = event.accelerationIncludingGravity || { x: 0, y: 0, z: 0 };
+                const { x, y, z } = event.accelerationIncludingGravity || {};
                 if (x !== null && y !== null && z !== null) {
                     const diffTime = currentTime - lastUpdate;
-                    const speed = Math.abs(x + y + z - lastX - lastY - lastZ) / diffTime * 10000;
+                    const speed = Math.abs((x ?? 0) + (y ?? 0) + (z ?? 0) - lastAcceleration.current.x - lastAcceleration.current.y - lastAcceleration.current.z) / diffTime * 10000;
 
                     if (speed > shakeThreshold) {
                         shake();
                     }
 
-                    lastX = x || 0;
-                    lastY = y || 0;
-                    lastZ = z || 0;
+                    lastAcceleration.current = { x: x || 0, y: y || 0, z: z || 0 };
                     lastUpdate = currentTime;
                 }
             }
         };
 
-        window.addEventListener('devicemotion', handleMotion);
-        return () => window.removeEventListener('devicemotion', handleMotion);
+        requestPermission();
+
+        return () => {
+            if (typeof window !== 'undefined' && 'DeviceMotionEvent' in window) {
+                window.removeEventListener('devicemotion', handleMotion);
+            }
+        };
     }, [shake]);
+
 
 
     return (
