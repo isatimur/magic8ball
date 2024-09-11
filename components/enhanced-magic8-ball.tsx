@@ -26,9 +26,9 @@ const shakeAnimation = {
     }
 }
 
-interface DeviceMotionEventWithPermission extends DeviceMotionEvent {
-    requestPermission?: () => Promise<'granted' | 'denied' | 'default'>;
-}
+// interface DeviceMotionEventWithPermission extends DeviceMotionEvent {
+    // requestPermission?: () => Promise<'granted' | 'denied' | 'default'>;
+// }
 
 export default function EnhancedMagic8Ball() {
     const [phrase, setPhrase] = useState("8")
