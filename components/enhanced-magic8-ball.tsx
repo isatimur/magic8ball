@@ -67,23 +67,6 @@ export default function EnhancedMagic8Ball() {
         let lastUpdate = 0;
         const shakeThreshold = 15;
 
-        const requestPermission = async () => {
-            if (typeof DeviceMotionEvent !== 'undefined' && 'requestPermission' in DeviceMotionEvent) {
-                try {
-                    const response = await (DeviceMotionEvent as unknown as { requestPermission(): Promise<PermissionState> }).requestPermission();
-                    if (response === 'granted') {
-                        window.addEventListener('devicemotion', handleMotion);
-                    } else {
-                        console.log('Permission to use motion sensors denied.');
-                    }
-                } catch (error) {
-                    console.error('Error requesting permission for motion sensors:', error);
-                }
-            } else if ('DeviceMotionEvent' in window) {
-                window.addEventListener('devicemotion', handleMotion);
-            }
-        };
-
         const handleMotion = (event: DeviceMotionEvent) => {
             const currentTime = new Date().getTime();
             if ((currentTime - lastUpdate) > 100) {
@@ -102,7 +85,24 @@ export default function EnhancedMagic8Ball() {
             }
         };
 
-        requestPermission();
+        const setupAccelerometer = async () => {
+            if (typeof DeviceMotionEvent !== 'undefined' && 'requestPermission' in DeviceMotionEvent) {
+                try {
+                    const response = await (DeviceMotionEvent as unknown as { requestPermission(): Promise<PermissionState> }).requestPermission();
+                    if (response === 'granted') {
+                        window.addEventListener('devicemotion', handleMotion);
+                    } else {
+                        console.log('Permission to use motion sensors denied.');
+                    }
+                } catch (error) {
+                    console.error('Error requesting permission for motion sensors:', error);
+                }
+            } else if ('DeviceMotionEvent' in window) {
+                window.addEventListener('devicemotion', handleMotion);
+            }
+        };
+
+        setupAccelerometer();
 
         return () => {
             if (typeof window !== 'undefined' && 'DeviceMotionEvent' in window) {
