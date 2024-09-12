@@ -5,9 +5,9 @@ import { motion, AnimatePresence, useAnimation } from 'framer-motion'
 import Image from 'next/image'
 
 const phrases = [
-    "Yes,\nif \nyou \nmake\na \nplan",
+    "Yes, if you\n make\na \nplan",
     "\nFuck yes!\n",
-    "Yes,\nif \nyou \nbelieve",
+    "Yes,if you\n believe",
 ]
 
 export default function EnhancedMagic8Ball() {
@@ -101,7 +101,7 @@ export default function EnhancedMagic8Ball() {
 
             {/* Magic 8 Ball */}
             <motion.div
-                className="relative w-96 h-96 cursor-pointer"
+                className="relative w-[32rem] h-[32rem] cursor-pointer"
                 onClick={shake}
                 animate={isShaking ? shakeControls : {}}
             >
@@ -112,7 +112,7 @@ export default function EnhancedMagic8Ball() {
                     objectFit="contain"
                 />
                 <motion.div
-                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full flex items-center justify-center overflow-hidden"
+                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[32rem] h-[32rem] rounded-full flex items-center justify-center overflow-hidden"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.2 }}
@@ -125,8 +125,8 @@ export default function EnhancedMagic8Ball() {
                                 style={{
                                     transform: 'rotate(-90deg)',
                                     fontFamily: "Sevillana, sans-serif",
-                                    fontSize: '7rem',
-                                    marginTop: '-6rem',
+                                    fontSize: '9rem',
+                                    marginTop: '-8rem',
                                     willChange: 'transform, opacity'
                                 }}
                             >
@@ -136,65 +136,62 @@ export default function EnhancedMagic8Ball() {
                             // Text inside upside-down triangle for other answers (SVG version)
                             <motion.div
                                 key="triangle"
-                                className="relative flex items-center justify-center pt-5 mb-20 text-5xl"
+                                className="relative flex items-center justify-center pt-5 mb-20 text-4xl"
                                 initial={{ opacity: 0, scale: 0.8 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.8 }}
                                 transition={{ duration: 0.3 }}
-
                             >
                                 {/* SVG Transparent triangle with black borders */}
                                 <svg
-                                    width="128"
-                                    height="130"
-                                    viewBox="0 0 102 88"
+                                    width="200"
+                                    height="200"
+                                    viewBox="0 0 100 100"
                                     xmlns="http://www.w3.org/2000/svg"
-                                    style={{ transform: 'rotate(180deg)' }}  // Triangle is rotated
+                                    style={{ transform: 'rotate(180deg)' }}
                                 >
                                     <polygon
-                                        points="50,0 100,86.6 2,86.6"
+                                        points="50,16 90,95 6,95"
                                         fill="transparent"
                                         stroke="black"
                                         strokeWidth="2"
-                                    // strokeLinejoin="miter"
                                     />
                                     <text
                                         x="50%"
-                                        y="40%"
-                                        fontSize="15"
+                                        y="20%"
+                                        fontSize="10"
                                         fill="black"
                                         textAnchor="middle"
                                         fontFamily="Arial, sans-serif"
-                                        transform="rotate(180, 52, 52)" // Rotate the text back to normal
+                                        transform="rotate(180, 50, 50)"
                                     >
-                                        {phrase.split(" ").map((word, idx) => (
+                                        {phrase.split("\n").map((line, idx) => (
                                             <tspan
                                                 key={idx}
                                                 x="50%"
-                                                dy={`${idx === 0 ? 0 : 12}`} // Move each line down
+                                                dy={`${idx === 0 ? 0 : 14}`}
                                             >
-                                                {word}
+                                                {line}
                                             </tspan>
                                         ))}
                                     </text>
                                 </svg>
                             </motion.div>
                         )}
-                        )
                     </AnimatePresence>
                 </motion.div>
 
             </motion.div>
             {/* Footer Text */}
-            <motion.p
-                className="text-lg mt-8 text-black tracking-wider"
+            <motion.h1
+                className="text-xl font-semibold mb-8 text-black"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
                 style={{ fontFamily: "Arial, sans-serif" }}
             >
                 shake wisely
-            </motion.p>
+            </motion.h1>
         </div>
     )
 }
