@@ -6,7 +6,7 @@ import { Loader2 } from 'lucide-react'
 
 
 const phrases = [
-    "Yes,\nif \nyou \nmake\na\nplan",
+    "Yes,\nif \nyou \nmake\na \nplan",
     "\nFuck yes!\n",
     "Yes,\nif \nyou \nbelieve",
 ]
@@ -15,6 +15,7 @@ export default function EnhancedMagic8Ball() {
     const [phrase, setPhrase] = useState("8")
     const [isShaking, setIsShaking] = useState(false)
     const [isAnswering, setIsAnswering] = useState(false)
+    const [showAnswer, setShowAnswer] = useState(false)
     const lastAcceleration = useRef({ x: 0, y: 0, z: 0 });
 
 
@@ -27,6 +28,7 @@ export default function EnhancedMagic8Ball() {
 
         setIsShaking(true)
         setIsAnswering(true)
+        setShowAnswer(false) 
 
         // Add vibration
         if ('vibrate' in navigator) {
@@ -35,8 +37,9 @@ export default function EnhancedMagic8Ball() {
 
         const crazyShake = async () => {
             const generateRandomShake = () => ({
-                x: Math.random() * 100 - 50,
-                y: Math.random() * 100 - 50,
+                x: Math.random() * 8 - 8,
+                y: Math.random() * 8 - 8,
+                z: Math.random() * 8 - 8,
             })
 
             const shakeSequence = Array.from({ length: 30 }, generateRandomShake)
@@ -44,14 +47,16 @@ export default function EnhancedMagic8Ball() {
             await shakeControls.start({
                 x: 0,
                 y: 0,
-                transition: { duration: 0.3, ease: "easeIn" }
+                z: 0,
+                transition: { duration: 0.3, ease: "linear" }
             })
 
             await shakeControls.start({
                 x: shakeSequence.map(point => point.x),
                 y: shakeSequence.map(point => point.y),
+                z: shakeSequence.map(point => point.z),
                 transition: {
-                    duration: 1.2,
+                    duration: 1.0,
                     times: shakeSequence.map((_, i) => i / (shakeSequence.length - 1)),
                     ease: "linear",
                     repeat: 1,
@@ -61,7 +66,8 @@ export default function EnhancedMagic8Ball() {
             await shakeControls.start({
                 x: 0,
                 y: 0,
-                transition: { duration: 0.3, ease: "easeOut" }
+                z: 0,
+                transition: { duration: 0.3, ease: "linear" }
             })
         }
 
@@ -75,6 +81,7 @@ export default function EnhancedMagic8Ball() {
         const newAnswer = phrases[Math.floor(Math.random() * phrases.length)]
         setPhrase(newAnswer)
         setIsAnswering(false)
+        setShowAnswer(true)
     }, [isShaking, isAnswering, shakeControls])
 
 
@@ -166,32 +173,20 @@ export default function EnhancedMagic8Ball() {
                         transition={{ delay: 0.2 }}
                     >
                         <AnimatePresence mode="wait" initial={false}>
-                            {isAnswering ? (
-                                <motion.div
-                                    key="loader"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    exit={{ opacity: 0 }}
+                        {!showAnswer ? (
+                                <motion.span
+                                    key="eight"
+                                    className="text-black font-bold text-5xl"
+                                    style={{
+                                        transform: 'rotate(-90deg)',
+                                        fontFamily: "Sevillana, sans-serif",
+                                        fontSize: '7rem',
+                                        willChange: 'transform, opacity'
+                                    }}
                                 >
-                                    <Loader2 className="w-8 h-8 text-red-600 animate-spin" />
-                                </motion.div>
+                                    8
+                                </motion.span>
                             ) : (
-                                <>
-                                    {phrase === "8" ? (
-                                        // Correctly styled and rotated "8"
-                                        <motion.span
-                                            key="eight"
-                                            className="text-black font-bold text-5xl"
-                                            style={{
-                                                transform: 'rotate(-90deg)', // Rotating 8 by -90 degrees (270 degrees)
-                                                fontFamily: "Sevillana, sans-serif",
-                                                fontSize: '7rem',
-                                                willChange: 'transform, opacity'
-                                            }}
-                                        >
-                                            8
-                                        </motion.span>
-                                    ) : (
                                         // Text inside upside-down triangle for other answers (SVG version)
                                         <motion.div
                                             key="triangle"
@@ -204,26 +199,26 @@ export default function EnhancedMagic8Ball() {
                                             {/* SVG Transparent triangle with black borders */}
                                             <svg
                                                 width="100"
-                                                height="86.6"
-                                                viewBox="0 0 100 86.6"
+                                                height="88"
+                                                viewBox="0 0 102 88"
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 style={{ transform: 'rotate(180deg)' }}  // Triangle is rotated
                                             >
                                                 <polygon
-                                                    points="50,0 100,86.6 0,86.6"
+                                                    points="50,0 100,86.6 2,86.6"
                                                     fill="transparent"
                                                     stroke="black"
                                                     strokeWidth="2"
-                                                    strokeLinejoin="miter"
+                                                    // strokeLinejoin="miter"
                                                 />
                                                 <text
                                                     x="50%"
                                                     y="40%"
-                                                    fontSize="9"
+                                                    fontSize="15"
                                                     fill="black"
                                                     textAnchor="middle"
                                                     fontFamily="Arial, sans-serif"
-                                                    transform="rotate(180, 50, 50)" // Rotate the text back to normal
+                                                    transform="rotate(180, 52, 52)" // Rotate the text back to normal
                                                 >
                                                     {phrase.split(" ").map((word, idx) => (
                                                         <tspan
@@ -238,8 +233,7 @@ export default function EnhancedMagic8Ball() {
                                             </svg>
                                         </motion.div>
                                     )}
-                                </>
-                            )}
+                            )
                         </AnimatePresence>
                     </motion.div>
                 </motion.div>
