@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState, useRef } from 'react'
+import { useCallback, useState } from 'react'
 import { motion, AnimatePresence, useAnimation } from 'framer-motion'
 import Image from 'next/image'
 
@@ -15,7 +15,6 @@ export default function EnhancedMagic8Ball() {
     const [isShaking, setIsShaking] = useState(false)
     const [isAnswering, setIsAnswering] = useState(false)
     const [showAnswer, setShowAnswer] = useState(false)
-    const lastAcceleration = useRef({ x: 0, y: 0, z: 0 });
 
 
 
@@ -27,7 +26,7 @@ export default function EnhancedMagic8Ball() {
 
         setIsShaking(true)
         setIsAnswering(true)
-        setShowAnswer(false) 
+        setShowAnswer(false)
 
         // Add vibration
         if ('vibrate' in navigator) {
@@ -79,64 +78,13 @@ export default function EnhancedMagic8Ball() {
         setIsShaking(false)
 
         // Simulate "thinking" time
-        await new Promise(resolve => setTimeout(resolve, 800))
+        await new Promise(resolve => setTimeout(resolve, 500))
 
         const newAnswer = phrases[Math.floor(Math.random() * phrases.length)]
         setPhrase(newAnswer)
         setIsAnswering(false)
         setShowAnswer(true)
     }, [isShaking, isAnswering, shakeControls])
-
-
-    useEffect(() => {
-        let lastUpdate = 0;
-        const shakeThreshold = 15;
-
-        const handleMotion = (event: DeviceMotionEvent) => {
-            const currentTime = new Date().getTime();
-            if ((currentTime - lastUpdate) > 100) {
-                const { x, y, z } = event.accelerationIncludingGravity || {};
-                if (x !== null && y !== null && z !== null) {
-                    const diffTime = currentTime - lastUpdate;
-                    const speed = Math.abs((x ?? 0) + (y ?? 0) + (z ?? 0) - lastAcceleration.current.x - lastAcceleration.current.y - lastAcceleration.current.z) / diffTime * 10000;
-
-                    if (speed > shakeThreshold) {
-                        shake();
-                    }
-
-                    lastAcceleration.current = { x: x || 0, y: y || 0, z: z || 0 };
-                    lastUpdate = currentTime;
-                }
-            }
-        };
-
-        const setupAccelerometer = async () => {
-            if (typeof DeviceMotionEvent !== 'undefined' && 'requestPermission' in DeviceMotionEvent) {
-                try {
-                    const response = await (DeviceMotionEvent as unknown as { requestPermission(): Promise<PermissionState> }).requestPermission();
-                    if (response === 'granted') {
-                        window.addEventListener('devicemotion', handleMotion);
-                    } else {
-                        console.log('Permission to use motion sensors denied.');
-                    }
-                } catch (error) {
-                    console.error('Error requesting permission for motion sensors:', error);
-                }
-            } else if ('DeviceMotionEvent' in window) {
-                window.addEventListener('devicemotion', handleMotion);
-            }
-        };
-
-        setupAccelerometer();
-
-        return () => {
-            if (typeof window !== 'undefined' && 'DeviceMotionEvent' in window) {
-                window.removeEventListener('devicemotion', handleMotion);
-            }
-        };
-    }, [shake]);
-
-
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-white p-4">
@@ -169,71 +117,72 @@ export default function EnhancedMagic8Ball() {
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.2 }}
                 >
-                        <AnimatePresence mode="wait" initial={false}>
+                    <AnimatePresence mode="wait" initial={false}>
                         {!showAnswer ? (
-                                <motion.span
-                                    key="eight"
-                                    className="text-black font-bold text-5xl"
-                                    style={{
-                                        transform: 'rotate(-90deg)',
-                                        fontFamily: "Sevillana, sans-serif",
-                                        fontSize: '7rem',
-                                        marginTop: '-6rem',
-                                        willChange: 'transform, opacity'
-                                    }}
+                            <motion.span
+                                key="eight"
+                                className="text-black font-bold text-5xl"
+                                style={{
+                                    transform: 'rotate(-90deg)',
+                                    fontFamily: "Sevillana, sans-serif",
+                                    fontSize: '7rem',
+                                    marginTop: '-6rem',
+                                    willChange: 'transform, opacity'
+                                }}
+                            >
+                                8
+                            </motion.span>
+                        ) : (
+                            // Text inside upside-down triangle for other answers (SVG version)
+                            <motion.div
+                                key="triangle"
+                                className="relative flex items-center justify-center pt-5 mb-20 text-5xl"
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.8 }}
+                                transition={{ duration: 0.3 }}
+
+                            >
+                                {/* SVG Transparent triangle with black borders */}
+                                <svg
+                                    width="128"
+                                    height="130"
+                                    viewBox="0 0 102 88"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    style={{ transform: 'rotate(180deg)' }}  // Triangle is rotated
                                 >
-                                    8
-                                </motion.span>
-                            ) : (
-                                        // Text inside upside-down triangle for other answers (SVG version)
-                                        <motion.div
-                                            key="triangle"
-                                            className="relative flex items-center justify-center pt-5 mb-20 text-5xl"
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: -20 }}
-                                            transition={{ duration: 0.3 }}
-                                        >
-                                            {/* SVG Transparent triangle with black borders */}
-                                            <svg
-                                                width="130"
-                                                height="132"
-                                                viewBox="0 0 102 88"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                style={{ transform: 'rotate(180deg)' }}  // Triangle is rotated
+                                    <polygon
+                                        points="50,0 100,86.6 2,86.6"
+                                        fill="transparent"
+                                        stroke="black"
+                                        strokeWidth="2"
+                                    // strokeLinejoin="miter"
+                                    />
+                                    <text
+                                        x="50%"
+                                        y="40%"
+                                        fontSize="15"
+                                        fill="black"
+                                        textAnchor="middle"
+                                        fontFamily="Arial, sans-serif"
+                                        transform="rotate(180, 52, 52)" // Rotate the text back to normal
+                                    >
+                                        {phrase.split(" ").map((word, idx) => (
+                                            <tspan
+                                                key={idx}
+                                                x="50%"
+                                                dy={`${idx === 0 ? 0 : 12}`} // Move each line down
                                             >
-                                                <polygon
-                                                    points="50,0 100,86.6 2,86.6"
-                                                    fill="transparent"
-                                                    stroke="black"
-                                                    strokeWidth="2"
-                                                    // strokeLinejoin="miter"
-                                                />
-                                                <text
-                                                    x="50%"
-                                                    y="40%"
-                                                    fontSize="15"
-                                                    fill="black"
-                                                    textAnchor="middle"
-                                                    fontFamily="Arial, sans-serif"
-                                                    transform="rotate(180, 52, 52)" // Rotate the text back to normal
-                                                >
-                                                    {phrase.split(" ").map((word, idx) => (
-                                                        <tspan
-                                                            key={idx}
-                                                            x="50%"
-                                                            dy={`${idx === 0 ? 0 : 12}`} // Move each line down
-                                                        >
-                                                            {word}
-                                                        </tspan>
-                                                    ))}
-                                                </text>
-                                            </svg>
-                                        </motion.div>
-                                    )}
-                            )
-                        </AnimatePresence>
-                    </motion.div>
+                                                {word}
+                                            </tspan>
+                                        ))}
+                                    </text>
+                                </svg>
+                            </motion.div>
+                        )}
+                        )
+                    </AnimatePresence>
+                </motion.div>
 
             </motion.div>
             {/* Footer Text */}
