@@ -2,8 +2,7 @@
 
 import { useCallback, useEffect, useState, useRef } from 'react'
 import { motion, AnimatePresence, useAnimation } from 'framer-motion'
-import { Loader2 } from 'lucide-react'
-
+import Image from 'next/image'
 
 const phrases = [
     "Yes,\nif \nyou \nmake\na \nplan",
@@ -40,6 +39,7 @@ export default function EnhancedMagic8Ball() {
                 x: Math.random() * 8 - 8,
                 y: Math.random() * 8 - 8,
                 z: Math.random() * 8 - 8,
+                scale: 1.1,
             })
 
             const shakeSequence = Array.from({ length: 30 }, generateRandomShake)
@@ -48,6 +48,7 @@ export default function EnhancedMagic8Ball() {
                 x: 0,
                 y: 0,
                 z: 0,
+                scale: 1,
                 transition: { duration: 0.3, ease: "linear" }
             })
 
@@ -55,6 +56,7 @@ export default function EnhancedMagic8Ball() {
                 x: shakeSequence.map(point => point.x),
                 y: shakeSequence.map(point => point.y),
                 z: shakeSequence.map(point => point.z),
+                scale: shakeSequence.map(point => point.scale),
                 transition: {
                     duration: 1.0,
                     times: shakeSequence.map((_, i) => i / (shakeSequence.length - 1)),
@@ -67,6 +69,7 @@ export default function EnhancedMagic8Ball() {
                 x: 0,
                 y: 0,
                 z: 0,
+                scale: 1,
                 transition: { duration: 0.3, ease: "linear" }
             })
         }
@@ -150,28 +153,22 @@ export default function EnhancedMagic8Ball() {
 
             {/* Magic 8 Ball */}
             <motion.div
-                animate={shakeControls}
-                initial={{ x: 0, y: 0 }}
+                className="relative w-96 h-96 cursor-pointer"
+                onClick={shake}
+                animate={isShaking ? shakeControls : {}}
             >
+                <Image
+                    src="/8ball.svg"
+                    alt="Magic 8 Ball"
+                    layout="fill"
+                    objectFit="contain"
+                />
                 <motion.div
-                    className="w-64 h-64 bg-red-600 rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:shadow-xl transition-shadow duration-300 relative"
-                    onClick={shake}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    style={{ perspective: "1000px", marginBottom: '20px' }}  // Moves the triangle down by 20px
+                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full flex items-center justify-center overflow-hidden"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.2 }}
                 >
-                    <motion.div
-                        className="w-full h-full rounded-full absolute"
-                        style={{
-                            background: "radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2) 0%, rgba(0,0,0,0) 70%)",
-                        }}
-                    />
-                    <motion.div
-                        className="w-32 h-32 bg-white rounded-full flex items-center justify-center overflow-hidden"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.2 }}
-                    >
                         <AnimatePresence mode="wait" initial={false}>
                         {!showAnswer ? (
                                 <motion.span
@@ -181,6 +178,7 @@ export default function EnhancedMagic8Ball() {
                                         transform: 'rotate(-90deg)',
                                         fontFamily: "Sevillana, sans-serif",
                                         fontSize: '7rem',
+                                        marginTop: '-6rem',
                                         willChange: 'transform, opacity'
                                     }}
                                 >
@@ -190,7 +188,7 @@ export default function EnhancedMagic8Ball() {
                                         // Text inside upside-down triangle for other answers (SVG version)
                                         <motion.div
                                             key="triangle"
-                                            className="relative flex items-center justify-center pt-5"
+                                            className="relative flex items-center justify-center pt-5 mb-20 text-5xl"
                                             initial={{ opacity: 0, y: 20 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, y: -20 }}
@@ -198,8 +196,8 @@ export default function EnhancedMagic8Ball() {
                                         >
                                             {/* SVG Transparent triangle with black borders */}
                                             <svg
-                                                width="100"
-                                                height="88"
+                                                width="130"
+                                                height="132"
                                                 viewBox="0 0 102 88"
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 style={{ transform: 'rotate(180deg)' }}  // Triangle is rotated
@@ -236,7 +234,7 @@ export default function EnhancedMagic8Ball() {
                             )
                         </AnimatePresence>
                     </motion.div>
-                </motion.div>
+
             </motion.div>
             {/* Footer Text */}
             <motion.p
