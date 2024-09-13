@@ -7,7 +7,7 @@ import Image from 'next/image'
 const phrases = [
     "Yes, if you\n make\na \nplan",
     "\nFuck yes!\n",
-    "Yes,if you\n believe",
+    "Yes, if you\n believe",
 ]
 
 export default function EnhancedMagic8Ball() {
