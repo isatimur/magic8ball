@@ -150,15 +150,10 @@ export default function EnhancedMagic8Ball() {
                                     xmlns="http://www.w3.org/2000/svg"
                                     style={{ transform: 'rotate(180deg)' }}
                                 >
-                                    <polygon
-                                        points="50,16 90,95 6,95"
-                                        fill="transparent"
-                                        stroke="black"
-                                        strokeWidth="2"
-                                    />
+<polygon points="50,18 90,95 9,95" fill="transparent" stroke="black" stroke-width="2"></polygon>
                                     <text
                                         x="50%"
-                                        y="20%"
+                                        y="17%"
                                         fontSize="10"
                                         fill="black"
                                         textAnchor="middle"
