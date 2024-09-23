@@ -99,7 +99,7 @@ export default function EnhancedMagic8Ball() {
                 make a wish
             </motion.h1>
 
-            {/* Magic 8 Ball */}
+            {/* Infinity Ball */}
             <motion.div
                 className="relative w-[32rem] h-[32rem] cursor-pointer"
                 onClick={shake}
@@ -107,7 +107,7 @@ export default function EnhancedMagic8Ball() {
             >
                 <Image
                     src="/8ball.svg"
-                    alt="Magic 8 Ball"
+                    alt="Infinity Ball"
                     layout="fill"
                     objectFit="contain"
                 />

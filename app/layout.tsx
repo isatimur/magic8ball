@@ -14,7 +14,7 @@ const sevillana = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Magic 8 Ball",
+  title: "Infinity Ball",
   description: "If you believe in it . . .",
 };
 
